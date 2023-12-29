@@ -5,16 +5,16 @@ history:
 021/0329 add cid printing
 021/1026 add -1 option
 
+go mod init github.com/shoce/l
 go get -a -u -v
 go mod tidy
 
 GoFmt
 GoBuildNull
 GoBuild
-GoRelease
 GoRun
 
- && ln -sf l /bin/ls && ln -sf l /bin/lt && ln -sf l /bin/ll && ln -sf l /bin/lr && ln -sf l /bin/llr
+ && ln -sf l /bin/ls && ln -sf l /bin/lsr && ln -sf l /bin/lt && ln -sf l /bin/ll && ln -sf l /bin/lr && ln -sf l /bin/llr
 
 */
 
@@ -212,6 +212,9 @@ func main() {
 	cmdname := path.Base(os.Args[0])
 	switch cmdname {
 	case "ls":
+		ShowSize = true
+	case "lsr":
+		Recursive = true
 		ShowSize = true
 	case "lt":
 		ShowTime = true

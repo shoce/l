@@ -115,6 +115,9 @@ func printinfo(path string, info os.FileInfo) error {
 	if ShowSize && finfo.Mode().IsDir() {
 		s += TAB + "size:dir"
 	}
+	if ShowSize && (info.Mode()&os.ModeSymlink != 0) {
+		s += TAB + "size:symlink"
+	}
 
 	if ShowTime {
 		s += TAB + fmt.Sprintf("mtime:%s", finfo.ModTime().UTC().Format("06/0102@1504"))
@@ -213,9 +216,11 @@ func main() {
 	switch cmdname {
 	case "ls":
 		ShowSize = true
+		ShowSymlink = true
 	case "lsr":
 		Recursive = true
 		ShowSize = true
+		ShowSymlink = true
 	case "lt":
 		ShowTime = true
 	case "lr":

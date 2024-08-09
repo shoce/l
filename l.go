@@ -170,7 +170,9 @@ func ls(path string) error {
 		if err != nil {
 			return err
 		}
-		// TODO linktargetpath should become absolute now
+		if !filepath.IsAbs(linktargetpath) {
+			linktargetpath = filepath.Clean(filepath.Join(filepath.Dir(path), linktargetpath))
+		}
 		linktargetstat, err := os.Lstat(linktargetpath)
 		if err != nil {
 			return err
@@ -188,9 +190,9 @@ func ls(path string) error {
 			return err
 		}
 
-		for _, filestat := range ff {
-			filepath := filepath.Join(path, filestat.Name())
-			printinfo(filepath, filestat)
+		for _, fstat := range ff {
+			fpath := filepath.Join(path, fstat.Name())
+			printinfo(fpath, fstat)
 		}
 	} else {
 		if err2 := printinfo(path, pathstat); err2 != nil {
@@ -298,9 +300,7 @@ func list(path string) error {
 		return err
 	}
 
-	path = filepath.Clean(path)
-
-	// BUG: `ls /symlink/to/dir/` shows contents but `ls -r /symlink/to/dir/` does not
+	// TODO `ls /symlink/to/dir/` shows contents but `ls -r /symlink/to/dir/` does not
 
 	if Recursive {
 		err = filepath.Walk(path, fls)

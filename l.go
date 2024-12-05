@@ -5,8 +5,7 @@ history:
 021/0329 add cid printing
 021/1026 add -1 option
 
-go mod init github.com/shoce/l
-go get -a -u -v
+go get -u -v
 go mod tidy
 
 GoFmt
@@ -35,7 +34,10 @@ import (
 	mh "github.com/multiformats/go-multihash"
 )
 
-const TAB = "\t"
+const (
+	NL  = "\n"
+	TAB = "\t"
+)
 
 var (
 	Version string
@@ -59,19 +61,17 @@ func seps(i int, e int) string {
 	}
 }
 
-func log(msg string, args ...interface{}) {
-	const Beat = time.Duration(24) * time.Hour / 1000
-	tzBiel := time.FixedZone("Biel", 60*60)
-	t := time.Now().In(tzBiel)
-	ty := t.Sub(time.Date(t.Year(), 1, 1, 0, 0, 0, 0, tzBiel))
-	td := t.Sub(time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, tzBiel))
-	ts := fmt.Sprintf(
-		"%d/%d@%d",
-		t.Year()%1000,
-		int(ty/(time.Duration(24)*time.Hour))+1,
-		int(td/Beat),
+func ts() string {
+	t := time.Now().UTC()
+	return fmt.Sprintf(
+		"%03d."+"%02d%02d."+"%02d%02d",
+		t.Year()%1000, t.Month(), t.Day(), t.Hour(), t.Minute(),
 	)
-	fmt.Fprintf(os.Stderr, ts+" "+msg+"\n", args...)
+}
+
+func log(msg interface{}, args ...interface{}) {
+	msgtext := fmt.Sprintf("%s %s", ts(), msg) + NL
+	fmt.Fprintf(os.Stderr, msgtext, args...)
 }
 
 func printinfo(path string, info os.FileInfo) error {
@@ -120,7 +120,7 @@ func printinfo(path string, info os.FileInfo) error {
 	}
 
 	if ShowTime {
-		s += TAB + fmt.Sprintf("mtime:%s", finfo.ModTime().UTC().Format("06/0102@1504"))
+		s += TAB + fmt.Sprintf("mtime:%s", finfo.ModTime().UTC().Format("06.0102.1504"))
 	}
 
 	if ShowCid && !finfo.IsDir() && (info.Mode()&os.ModeSymlink == 0) {

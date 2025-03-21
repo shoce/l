@@ -47,4 +47,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh release create $VERSION ${{ github.event.repository.name }}.linux.amd64.gz --notes-file release.notes..text
 
+      - name: clean gh releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: for tag in $( gh release list --order asc --limit 100 head -n -3 ) ; do echo gh release delete $tag -y ; done
+
 

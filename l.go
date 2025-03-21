@@ -297,7 +297,8 @@ func list(path string) error {
 		return err
 	}
 
-	// TODO `ls /symlink/to/dir/` shows contents but `ls -r /symlink/to/dir/` does not
+	// `ls /symlink/to/dir/` shows dir contents but `ls -r /symlink/to/dir/` does not
+	// should not be changed as a symlink to a parent dir will create infinite recursion
 
 	if Recursive {
 		err = filepath.Walk(path, fls)

@@ -5,9 +5,7 @@ history:
 021/0329 add cid printing
 021/1026 add -1 option
 
-go get -u -v
-go mod tidy
-
+GoGet
 GoFmt
 GoBuildNull
 GoBuild
@@ -64,14 +62,13 @@ func seps(i int, e int) string {
 func ts() string {
 	t := time.Now().UTC()
 	return fmt.Sprintf(
-		"%03d."+"%02d%02d."+"%02d%02d",
+		"%03d:%02d%02d:%02d%02d",
 		t.Year()%1000, t.Month(), t.Day(), t.Hour(), t.Minute(),
 	)
 }
 
-func log(msg interface{}, args ...interface{}) {
-	msgtext := fmt.Sprintf("%s %s", ts(), msg) + NL
-	fmt.Fprintf(os.Stderr, msgtext, args...)
+func log(msg string, args ...interface{}) {
+	fmt.Fprintf(os.Stderr, ts()+" "+msg+NL, args...)
 }
 
 func printinfo(path string, info os.FileInfo) error {
